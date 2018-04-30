@@ -1,6 +1,7 @@
 package pl.grondek.workclock.configuration;
 
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
+import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -9,6 +10,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
@@ -16,13 +18,16 @@ import java.util.Properties;
 public class HibernateConfiguration {
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
+    public SessionFactory sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setPackagesToScan("pl.grondek.workclock.entity");
         sessionFactory.setHibernateProperties(hibernateProperties());
-
-        return sessionFactory;
+        try {
+            sessionFactory.afterPropertiesSet();
+        } catch (IOException ignored) {
+        }
+        return sessionFactory.getObject();
     }
 
     @Bean
@@ -39,7 +44,7 @@ public class HibernateConfiguration {
     @Bean
     public PlatformTransactionManager hibernateTransactionManager() {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(sessionFactory().getObject());
+        transactionManager.setSessionFactory(sessionFactory());
         return transactionManager;
     }
 

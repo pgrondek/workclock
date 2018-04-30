@@ -34,7 +34,7 @@ dependencies {
     compile 'org.apache.tomcat:tomcat-dbcp:9.0.7'
 
     runtime 'mysql:mysql-connector-java'
-    testRuntime 'com.h2database:h2:1.4.196'
+    runtime 'com.h2database:h2:1.4.196'
     compileOnly 'org.projectlombok:lombok'
 
     testCompile 'org.codehaus.groovy:groovy-all:2.4.15'
