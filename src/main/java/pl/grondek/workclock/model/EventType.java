@@ -1,6 +1,6 @@
 package pl.grondek.workclock.model;
 
-public enum PunchType {
+public enum EventType {
     PUNCH_IN,
-    PUNCH_OUT;
+    PUNCH_OUT
 }
