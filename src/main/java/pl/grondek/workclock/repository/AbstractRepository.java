@@ -30,7 +30,7 @@ public abstract class AbstractRepository<T> {
     @Transactional
     public void save(T element) {
         getSession()
-                .save(element);
+            .save(element);
     }
 
     @Transactional
@@ -41,7 +41,7 @@ public abstract class AbstractRepository<T> {
         criteriaQuery.from(persistentClass);
 
         return sessionFactory.createQuery(criteriaQuery)
-                .getResultList();
+            .getResultList();
     }
 
 
