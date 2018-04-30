@@ -1,0 +1,44 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.1.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'pl.grondek'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.hibernate:hibernate-core:5.2.17.Final'
+    compile 'org.springframework:spring-orm:5.0.5.RELEASE'
+    compile 'org.apache.tomcat:tomcat-dbcp:9.0.7'
+
+    runtime 'mysql:mysql-connector-java'
+    testRuntime 'com.h2database:h2:1.4.196'
+    compileOnly 'org.projectlombok:lombok'
+
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.15'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile "org.spockframework:spock-core:1.1-groovy-2.4-rc-2"
+    testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4-rc-2'
+}
