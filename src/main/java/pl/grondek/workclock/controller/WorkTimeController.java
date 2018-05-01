@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.grondek.workclock.response.WorkTimeResponse;
 import pl.grondek.workclock.service.WorkTimeService;
 
+import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -31,5 +32,10 @@ public class WorkTimeController {
     @GetMapping("/list")
     public List<WorkTimeResponse> list() {
         return workTimeService.list();
+    }
+
+    @GetMapping("/duration")
+    public Duration duration() {
+        return workTimeService.calculateAllTime();
     }
 }
