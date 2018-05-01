@@ -59,7 +59,8 @@ public class WorkTimeService {
 
             if (nextEvent.getType() == EventType.PUNCH_IN && inEvent == null) {
                 inEvent = nextEvent;
-            } else if (nextEvent.getType() == EventType.PUNCH_OUT) {
+            // Ignore out event when there is no in event
+            } else if (nextEvent.getType() == EventType.PUNCH_OUT && inEvent != null) {
                 outEvent = nextEvent;
             }
 
@@ -69,7 +70,20 @@ public class WorkTimeService {
 
                 final Duration duration = Duration.between(inTime, outTime);
                 workTime = workTime.plus(duration);
+
+                // nullify references so they won't
+                inEvent = null;
+                outEvent = null;
             }
+        }
+
+        // In in work calculate work time until now
+        if (inEvent != null) {
+            final LocalDateTime inTime = inEvent.getTime();
+            final LocalDateTime outTime = LocalDateTime.now();
+
+            final Duration duration = Duration.between(inTime, outTime);
+            workTime = workTime.plus(duration);
         }
 
         return workTime;
