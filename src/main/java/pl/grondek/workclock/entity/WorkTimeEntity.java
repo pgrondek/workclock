@@ -15,15 +15,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkTimeEntity {
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_TIME = "time";
+    public static final String COLUMN_EVENT_TYPE = "eventType";
 
     @Id
-    @Column(unique = true, nullable = false)
+    @Column(name = COLUMN_ID, unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = COLUMN_TIME, unique = true, nullable = false)
     private LocalDateTime time;
 
-    @Column(nullable = false)
+    @Column(name = COLUMN_EVENT_TYPE, nullable = false)
     private EventType type;
 }

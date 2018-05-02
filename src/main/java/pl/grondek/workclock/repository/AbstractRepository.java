@@ -44,6 +44,11 @@ public abstract class AbstractRepository<T> {
             .getResultList();
     }
 
+    @Transactional
+    public void delete(T element) {
+        getSession()
+            .delete(element);
+    }
 
     protected final Session getSession() {
         return sessionFactory.getCurrentSession();
