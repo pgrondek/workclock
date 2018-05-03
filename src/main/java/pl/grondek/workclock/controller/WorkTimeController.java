@@ -7,6 +7,7 @@ import pl.grondek.workclock.response.DurationResponse;
 import pl.grondek.workclock.response.WorkTimeResponse;
 import pl.grondek.workclock.service.WorkTimeService;
 
+import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -36,11 +37,23 @@ public class WorkTimeController {
 
     @GetMapping("/duration")
     public DurationResponse duration() {
-        return workTimeService.calculateAllTime();
+        final Duration duration = workTimeService.calculateAllTime();
+        return mapResponse(duration);
     }
 
     @GetMapping("/duration/today")
     public DurationResponse today() {
-        return workTimeService.todayTime();
+        final Duration duration = workTimeService.todayTime();
+        return mapResponse(duration);
+    }
+
+    private DurationResponse mapResponse(Duration duration) {
+        final long hours = duration.toHours();
+        final int minutes = (int) (duration.toMinutes() - (hours * 60));
+
+        return DurationResponse.builder()
+            .hours(hours)
+            .minutes(minutes)
+            .build();
     }
 }

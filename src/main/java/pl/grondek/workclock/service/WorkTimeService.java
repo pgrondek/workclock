@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import pl.grondek.workclock.entity.WorkTimeEntity;
 import pl.grondek.workclock.model.EventType;
 import pl.grondek.workclock.repository.WorkTimeRepository;
-import pl.grondek.workclock.response.DurationResponse;
 import pl.grondek.workclock.response.WorkTimeResponse;
 
 import java.time.Duration;
@@ -42,19 +41,19 @@ public class WorkTimeService {
             ).collect(Collectors.toList());
     }
 
-    public DurationResponse calculateAllTime() {
+    public Duration calculateAllTime() {
         final List<WorkTimeEntity> allEvents = workTimeRepository.findAll();
         final Duration duration = calculateTime(allEvents.iterator());
 
-        return mapResponse(duration);
+        return duration;
     }
 
-    public DurationResponse todayTime() {
+    public Duration todayTime() {
         final LocalDateTime todayStartOfDay = LocalDate.now().atStartOfDay();
         final List<WorkTimeEntity> todayEvents = workTimeRepository.findAfter(todayStartOfDay);
 
         final Duration duration = calculateTime(todayEvents.iterator());
-        return mapResponse(duration);
+        return duration;
     }
 
     private Duration calculateTime(Iterator<WorkTimeEntity> eventIterator) {
@@ -107,13 +106,4 @@ public class WorkTimeService {
         workTimeRepository.save(entity);
     }
 
-    private DurationResponse mapResponse(Duration duration) {
-        final long hours = duration.toHours();
-        final int minutes = (int) (duration.toMinutes() - (hours * 60));
-
-        return DurationResponse.builder()
-            .hours(hours)
-            .minutes(minutes)
-            .build();
-    }
 }
