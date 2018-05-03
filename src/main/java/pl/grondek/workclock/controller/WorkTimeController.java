@@ -38,4 +38,9 @@ public class WorkTimeController {
     public DurationResponse duration() {
         return workTimeService.calculateAllTime();
     }
+
+    @GetMapping("/duration/today")
+    public DurationResponse today() {
+        return workTimeService.todayTime();
+    }
 }

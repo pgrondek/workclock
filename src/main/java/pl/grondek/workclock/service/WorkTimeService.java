@@ -8,6 +8,7 @@ import pl.grondek.workclock.response.DurationResponse;
 import pl.grondek.workclock.response.WorkTimeResponse;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +49,14 @@ public class WorkTimeService {
         return mapResponse(duration);
     }
 
+    public DurationResponse todayTime() {
+        final LocalDateTime todayStartOfDay = LocalDate.now().atStartOfDay();
+        final List<WorkTimeEntity> todayEvents = workTimeRepository.findAfter(todayStartOfDay);
+
+        final Duration duration = calculateTime(todayEvents.iterator());
+        return mapResponse(duration);
+    }
+
     private Duration calculateTime(Iterator<WorkTimeEntity> eventIterator) {
         WorkTimeEntity inEvent = null;
         WorkTimeEntity outEvent = null;
@@ -59,7 +68,7 @@ public class WorkTimeService {
 
             if (nextEvent.getType() == EventType.PUNCH_IN && inEvent == null) {
                 inEvent = nextEvent;
-            // Ignore out event when there is no in event
+                // Ignore out event when there is no in event
             } else if (nextEvent.getType() == EventType.PUNCH_OUT && inEvent != null) {
                 outEvent = nextEvent;
             }
