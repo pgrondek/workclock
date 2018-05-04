@@ -8,12 +8,15 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
+import java.io.Serializable;
 import java.util.List;
 
 @Repository
-public abstract class AbstractRepository<T> {
+public abstract class AbstractRepository<T, ID extends Serializable> {
 
     protected Class<T> persistentClass;
+
+    protected Class<ID> idClass;
 
     private final SessionFactory sessionFactory;
 
@@ -24,13 +27,18 @@ public abstract class AbstractRepository<T> {
     }
 
     private void initPersistentClass() {
-        this.persistentClass = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), AbstractRepository.class);
+        final Class<?>[] classes = GenericTypeResolver.resolveTypeArguments(getClass(), AbstractRepository.class);
+
+        this.persistentClass = (Class<T>) classes[0];
+        this.idClass = (Class<ID>) classes[1];
     }
 
     @Transactional
-    public void save(T element) {
-        getSession()
+    public ID save(T element) {
+        final ID id = (ID) getSession()
             .save(element);
+
+        return id;
     }
 
     @Transactional
@@ -42,6 +50,13 @@ public abstract class AbstractRepository<T> {
 
         return sessionFactory.createQuery(criteriaQuery)
             .getResultList();
+    }
+
+    @Transactional
+    public T findById(ID id) {
+        final T entity = getSession().get(persistentClass, id);
+
+        return entity;
     }
 
     @Transactional

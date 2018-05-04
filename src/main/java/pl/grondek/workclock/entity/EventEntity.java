@@ -7,26 +7,26 @@ import lombok.NoArgsConstructor;
 import pl.grondek.workclock.model.EventType;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkTimeEntity {
+public class EventEntity {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TIME = "time";
-    public static final String COLUMN_EVENT_TYPE = "eventType";
+    public static final String COLUMN_TYPE = "type";
 
     @Id
     @Column(name = COLUMN_ID, unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = COLUMN_TIME, unique = true, nullable = false)
-    private LocalDateTime time;
+    @Column(name = COLUMN_TIME, nullable = false)
+    private LocalTime time;
 
-    @Column(name = COLUMN_EVENT_TYPE, nullable = false)
+    @Column(name = COLUMN_TYPE, nullable = false)
     private EventType type;
 }
