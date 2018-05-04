@@ -1,6 +1,7 @@
 package pl.grondek.workclock.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.grondek.workclock.entity.EventEntity;
@@ -24,12 +25,12 @@ public class WorkTimeController {
         this.workTimeService = workTimeService;
     }
 
-    @GetMapping("/in")
+    @PostMapping("/in")
     public void punchIn() {
         workTimeService.punchIn();
     }
 
-    @GetMapping("/out")
+    @PostMapping("/out")
     public void punchOut() {
         workTimeService.punchOut();
     }
