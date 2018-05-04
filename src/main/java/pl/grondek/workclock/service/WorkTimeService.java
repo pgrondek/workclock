@@ -7,6 +7,7 @@ import pl.grondek.workclock.model.EventType;
 import pl.grondek.workclock.repository.EventRepository;
 import pl.grondek.workclock.repository.WorkDayRepository;
 
+import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,10 +26,12 @@ public class WorkTimeService {
         this.eventRepository = eventRepository;
     }
 
+    @Transactional
     public void punchIn() {
         saveEvent(EventType.PUNCH_IN);
     }
 
+    @Transactional
     public void punchOut() {
         saveEvent(EventType.PUNCH_OUT);
     }
@@ -117,19 +120,24 @@ public class WorkTimeService {
     private void saveEvent(EventType eventType) {
         final LocalDate today = LocalDate.now();
 
-        final EventEntity eventEntity = EventEntity.builder()
+        WorkDayEntity workDay = workDayRepository.findById(today);
+        if (workDay == null) {
+            final WorkDayEntity newEntity = WorkDayEntity.builder()
+                .date(today)
+                .events(new ArrayList<>())
+                .build();
+
+            final LocalDate entityId = workDayRepository.save(newEntity);
+            workDay = workDayRepository.findById(entityId);
+        }
+
+        final EventEntity unsavedEvent = EventEntity.builder()
             .time(LocalTime.now())
             .type(eventType)
             .build();
 
-        WorkDayEntity workDay = workDayRepository.findById(today);
-
-        if (workDay == null) {
-            workDay = WorkDayEntity.builder()
-                .date(today)
-                .events(new ArrayList<>())
-                .build();
-        }
+        final Integer entityId = eventRepository.save(unsavedEvent);
+        final EventEntity eventEntity = eventRepository.findById(entityId);
 
         final List<EventEntity> eventList = workDay.getEvents();
         eventList.add(eventEntity);
