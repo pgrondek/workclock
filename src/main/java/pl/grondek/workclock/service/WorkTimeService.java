@@ -28,12 +28,12 @@ public class WorkTimeService {
 
     @Transactional
     public void punchIn() {
-        saveEvent(EventType.PUNCH_IN);
+        createEventNow(EventType.PUNCH_IN);
     }
 
     @Transactional
     public void punchOut() {
-        saveEvent(EventType.PUNCH_OUT);
+        createEventNow(EventType.PUNCH_OUT);
     }
 
     public List<WorkDayEntity> list() {
@@ -117,22 +117,18 @@ public class WorkTimeService {
         return workTime;
     }
 
-    private void saveEvent(EventType eventType) {
+    private void createEventNow(EventType eventType) {
         final LocalDate today = LocalDate.now();
+        final LocalTime now = LocalTime.now();
 
-        WorkDayEntity workDay = workDayRepository.findById(today);
-        if (workDay == null) {
-            final WorkDayEntity newEntity = WorkDayEntity.builder()
-                .date(today)
-                .events(new ArrayList<>())
-                .build();
+        createEvent(eventType, today, now);
+    }
 
-            final LocalDate entityId = workDayRepository.save(newEntity);
-            workDay = workDayRepository.findById(entityId);
-        }
+    private void createEvent(EventType eventType, LocalDate date, LocalTime time) {
+        WorkDayEntity workDay = getOrCreateWorkDayEntity(date);
 
         final EventEntity unsavedEvent = EventEntity.builder()
-            .time(LocalTime.now())
+            .time(time)
             .type(eventType)
             .build();
 
@@ -144,4 +140,18 @@ public class WorkTimeService {
         workDayRepository.save(workDay);
     }
 
+    private WorkDayEntity getOrCreateWorkDayEntity(LocalDate date) {
+        WorkDayEntity workDay = workDayRepository.findById(date);
+        if (workDay == null) {
+            final WorkDayEntity newEntity = WorkDayEntity.builder()
+                .date(date)
+                .events(new ArrayList<>())
+                .build();
+
+            final LocalDate entityId = workDayRepository.save(newEntity);
+            workDay = workDayRepository.findById(entityId);
+        }
+
+        return workDay;
+    }
 }
