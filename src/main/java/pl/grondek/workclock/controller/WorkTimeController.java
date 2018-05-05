@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.grondek.workclock.entity.EventEntity;
 import pl.grondek.workclock.entity.WorkDayEntity;
 import pl.grondek.workclock.response.DurationResponse;
-import pl.grondek.workclock.response.WorkTimeResponse;
+import pl.grondek.workclock.response.EventsResponse;
 import pl.grondek.workclock.service.WorkTimeService;
 
 import java.time.Duration;
@@ -36,9 +36,9 @@ public class WorkTimeController {
     }
 
     @GetMapping("/list")
-    public List<WorkTimeResponse> list() {
+    public List<EventsResponse> list() {
         final List<WorkDayEntity> workDayEntityList = workTimeService.list();
-        final List<WorkTimeResponse> responseList = map(workDayEntityList);
+        final List<EventsResponse> responseList = map(workDayEntityList);
 
         return responseList;
     }
@@ -65,11 +65,11 @@ public class WorkTimeController {
             .build();
     }
 
-    private List<WorkTimeResponse> map(Iterable<WorkDayEntity> workDayEntityList) {
-        List<WorkTimeResponse> workTimeResponseList = new ArrayList<>();
+    private List<EventsResponse> map(Iterable<WorkDayEntity> workDayEntityList) {
+        List<EventsResponse> workTimeResponseList = new ArrayList<>();
         for (WorkDayEntity dayEntity : workDayEntityList) {
             for (EventEntity eventEntity : dayEntity.getEvents()) {
-                final WorkTimeResponse response = WorkTimeResponse.builder()
+                final EventsResponse response = EventsResponse.builder()
                     .time(LocalDateTime.of(dayEntity.getDate(), eventEntity.getTime()))
                     .type(eventEntity.getType())
                     .id(eventEntity.getId())
@@ -81,4 +81,6 @@ public class WorkTimeController {
 
         return workTimeResponseList;
     }
+
+
 }

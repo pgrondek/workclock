@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WorkTimeResponse {
+public class EventsResponse {
 
     private int id;
 
