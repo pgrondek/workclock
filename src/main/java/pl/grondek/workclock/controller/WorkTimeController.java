@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.grondek.workclock.entity.EventEntity;
 import pl.grondek.workclock.entity.WorkDayEntity;
+import pl.grondek.workclock.model.WorkTime;
 import pl.grondek.workclock.response.DurationResponse;
 import pl.grondek.workclock.response.EventsResponse;
+import pl.grondek.workclock.response.WorkTimeResponse;
 import pl.grondek.workclock.service.WorkTimeService;
 
 import java.time.Duration;
@@ -44,15 +46,15 @@ public class WorkTimeController {
     }
 
     @GetMapping("/duration")
-    public DurationResponse duration() {
-        final Duration duration = workTimeService.calculateAllTime();
-        return mapResponse(duration);
+    public WorkTimeResponse duration() {
+        final WorkTime workTime = workTimeService.calculateAllTime();
+        return mapResponse(workTime);
     }
 
     @GetMapping("/duration/today")
-    public DurationResponse today() {
-        final Duration duration = workTimeService.todayTime();
-        return mapResponse(duration);
+    public WorkTimeResponse today() {
+        final WorkTime workTime = workTimeService.todayTime();
+        return mapResponse(workTime);
     }
 
     private DurationResponse mapResponse(Duration duration) {
@@ -62,6 +64,13 @@ public class WorkTimeController {
         return DurationResponse.builder()
             .hours(hours)
             .minutes(minutes)
+            .build();
+    }
+
+    private WorkTimeResponse mapResponse(WorkTime workTime) {
+        return WorkTimeResponse.builder()
+            .workTime(mapResponse(workTime.getWorkTime()))
+            .balance(mapResponse(workTime.getBalance()))
             .build();
     }
 
@@ -81,6 +90,4 @@ public class WorkTimeController {
 
         return workTimeResponseList;
     }
-
-
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import pl.grondek.workclock.entity.EventEntity;
 import pl.grondek.workclock.entity.WorkDayEntity;
 import pl.grondek.workclock.model.EventType;
+import pl.grondek.workclock.model.WorkTime;
 import pl.grondek.workclock.repository.EventRepository;
 import pl.grondek.workclock.repository.WorkDayRepository;
 
@@ -40,14 +41,19 @@ public class WorkTimeService {
         return workDayRepository.findAll();
     }
 
-    public Duration calculateAllTime() {
+    public WorkTime calculateAllTime() {
         final List<WorkDayEntity> allEvents = workDayRepository.findAll();
         final Duration duration = calculateTime(allEvents);
+        final Duration balance = duration.minus(Duration.ofHours(8L).multipliedBy(allEvents.size()));
 
-        return duration;
+        final WorkTime workTime = WorkTime.builder()
+            .workTime(duration)
+            .balance(balance)
+            .build();
+        return workTime;
     }
 
-    public Duration todayTime() {
+    public WorkTime todayTime() {
         final LocalDate today = LocalDate.now();
         final WorkDayEntity dayEntity = workDayRepository.findById(today);
 
@@ -56,7 +62,13 @@ public class WorkTimeService {
         }
 
         final Duration duration = calculateTime(dayEntity);
-        return duration;
+        final Duration balance = duration.minus(Duration.ofHours(8L));
+
+        final WorkTime workTime = WorkTime.builder()
+            .workTime(duration)
+            .balance(balance)
+            .build();
+        return workTime;
     }
 
     private Duration calculateTime(Iterable<WorkDayEntity> workDayList) {
