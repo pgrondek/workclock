@@ -57,9 +57,16 @@ public class WorkTimeController {
         return mapResponse(workTime);
     }
 
-    private DurationResponse mapResponse(Duration duration) {
+    private DurationResponse mapResponse(Duration duration, boolean halfUp) {
         final long hours = duration.toHours();
-        final int minutes = (int) (duration.toMinutes() - (hours * 60));
+        int minutes = (int) (duration.toMinutes() - (hours * 60));
+        final long seconds = duration.getSeconds();
+
+        if (seconds > 30) {
+            minutes++;
+        } else if (seconds == 30 && halfUp) {
+            minutes++;
+        }
 
         return DurationResponse.builder()
             .hours(hours)
@@ -69,8 +76,8 @@ public class WorkTimeController {
 
     private WorkTimeResponse mapResponse(WorkTime workTime) {
         return WorkTimeResponse.builder()
-            .workTime(mapResponse(workTime.getWorkTime()))
-            .balance(mapResponse(workTime.getBalance()))
+            .workTime(mapResponse(workTime.getWorkTime(), false))
+            .balance(mapResponse(workTime.getBalance(), true))
             .build();
     }
 
