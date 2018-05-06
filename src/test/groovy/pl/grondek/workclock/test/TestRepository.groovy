@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository
 import pl.grondek.workclock.repository.AbstractRepository
 
 @Repository
-class TestRepository extends AbstractRepository<TestEntity> {
+class TestRepository extends AbstractRepository<TestEntity, Integer> {
 
     TestRepository(SessionFactory sessionFactory) {
         super(sessionFactory)
