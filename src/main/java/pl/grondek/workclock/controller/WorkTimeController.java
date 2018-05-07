@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.grondek.workclock.entity.EventEntity;
 import pl.grondek.workclock.entity.WorkDayEntity;
+import pl.grondek.workclock.model.Status;
 import pl.grondek.workclock.model.WorkTime;
 import pl.grondek.workclock.response.DurationResponse;
 import pl.grondek.workclock.response.EventsResponse;
+import pl.grondek.workclock.response.StatusResponse;
 import pl.grondek.workclock.response.WorkTimeResponse;
 import pl.grondek.workclock.service.WorkTimeService;
 
@@ -45,10 +47,10 @@ public class WorkTimeController {
         return responseList;
     }
 
-    @GetMapping("/duration")
-    public WorkTimeResponse duration() {
-        final WorkTime workTime = workTimeService.calculateAllTime();
-        return mapResponse(workTime);
+    @GetMapping("/status")
+    public StatusResponse status() {
+        final Status status = workTimeService.status();
+        return mapResponse(status);
     }
 
     @GetMapping("/duration/today")
@@ -78,6 +80,13 @@ public class WorkTimeController {
         return WorkTimeResponse.builder()
             .workTime(mapResponse(workTime.getWorkTime(), false))
             .balance(mapResponse(workTime.getBalance(), true))
+            .build();
+    }
+
+    private StatusResponse mapResponse(Status status) {
+        return StatusResponse.builder()
+            .balance(mapResponse(status.getBalance(), false))
+            .daysToReclaim(status.getDaysToReclaim())
             .build();
     }
 

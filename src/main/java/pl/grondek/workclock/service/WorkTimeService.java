@@ -4,11 +4,13 @@ import org.springframework.stereotype.Service;
 import pl.grondek.workclock.entity.EventEntity;
 import pl.grondek.workclock.entity.WorkDayEntity;
 import pl.grondek.workclock.model.EventType;
+import pl.grondek.workclock.model.Status;
 import pl.grondek.workclock.model.WorkTime;
 import pl.grondek.workclock.repository.EventRepository;
 import pl.grondek.workclock.repository.WorkDayRepository;
 
 import javax.transaction.Transactional;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,6 +20,7 @@ import java.util.List;
 @Service
 public class WorkTimeService {
 
+    public static final Duration WORK_TIME = Duration.ofHours(8);
     private final WorkDayRepository workDayRepository;
 
     private final EventRepository eventRepository;
@@ -39,18 +42,6 @@ public class WorkTimeService {
 
     public List<WorkDayEntity> list() {
         return workDayRepository.findAll();
-    }
-
-    public WorkTime calculateAllTime() {
-        final List<WorkDayEntity> allEvents = workDayRepository.findAll();
-        final Duration duration = calculateTime(allEvents);
-        final Duration balance = duration.minus(Duration.ofHours(8L).multipliedBy(allEvents.size()));
-
-        final WorkTime workTime = WorkTime.builder()
-            .workTime(duration)
-            .balance(balance)
-            .build();
-        return workTime;
     }
 
     public WorkTime todayTime() {
@@ -165,5 +156,33 @@ public class WorkTimeService {
         }
 
         return workDay;
+    }
+
+    public Status status() {
+        final List<WorkDayEntity> allDays = workDayRepository.findAll();
+
+        Duration balance = Duration.ZERO;
+        int daysToReclaim = 0;
+
+        for (WorkDayEntity workDay : allDays) {
+            Duration timeSpent = calculateTime(workDay);
+            if (workDay.getDate().getDayOfWeek() == DayOfWeek.SATURDAY) {
+                daysToReclaim++;
+                if (timeSpent.compareTo(WORK_TIME) > 0) {
+                    balance = balance.plus(timeSpent)
+                        .minus(WORK_TIME);
+                }
+            } else if (workDay.getDate().getDayOfWeek() == DayOfWeek.SUNDAY) {
+                balance = balance.plus(timeSpent);
+            } else {
+                balance = balance.plus(timeSpent)
+                    .minus(WORK_TIME);
+            }
+        }
+
+        return Status.builder()
+            .balance(balance)
+            .daysToReclaim(daysToReclaim)
+            .build();
     }
 }
